@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #111111;
+  --color-ink-muted: #666666;
+  --color-paper: #ffffff;
+  --color-mist: #f7f7f5;
+  --color-line: #e7e5e0;
+  --color-court: #4f7d2c;
+  --color-court-deep: #3b5e21;
+  --color-court-tint: #eef3e6;
+
+  --font-display: var(--font-magra), "Magra", sans-serif;
+  --font-body: var(--font-jakarta), "Plus Jakarta Sans", sans-serif;
+
+  --radius-card: 1.5rem;
+  --radius-pill: 999px;
+
+  --animate-fade-up: fade-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  @keyframes fade-up {
+    0% {
+      opacity: 0;
+      transform: translateY(28px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: var(--color-court);
+    color: var(--color-paper);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-court);
+    outline-offset: 3px;
+  }
+}
+
+@layer utilities {
+  .font-hero {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 121px;
+    line-height: 85.4%;
+    letter-spacing: -0.07em;
+  }
+
+  @media (max-width: 1024px) {
+    .font-hero {
+      font-size: 76px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .font-hero {
+      font-size: 48px;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
