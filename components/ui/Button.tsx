@@ -1,12 +1,12 @@
 "use client";
 
-import { ButtonHTMLAttributes, forwardRef, useRef } from "react";
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import { forwardRef, type MouseEvent, useRef } from "react";
+import { motion, type HTMLMotionProps, useMotionValue, useSpring } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 type ButtonVariant = "primary" | "secondary" | "ghost";
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends HTMLMotionProps<"button"> {
   variant?: ButtonVariant;
   magnetic?: boolean;
 }
@@ -21,23 +21,39 @@ const variantStyles: Record<ButtonVariant, string> = {
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = "primary", magnetic = true, children, ...props }, ref) => {
+  (
+    {
+      className,
+      variant = "primary",
+      magnetic = true,
+      children,
+      onMouseMove,
+      onMouseLeave,
+      style,
+      ...props
+    },
+    ref
+  ) => {
     const localRef = useRef<HTMLButtonElement>(null);
     const x = useMotionValue(0);
     const y = useMotionValue(0);
     const springX = useSpring(x, { stiffness: 200, damping: 15, mass: 0.3 });
     const springY = useSpring(y, { stiffness: 200, damping: 15, mass: 0.3 });
 
-    function handleMouseMove(e: React.MouseEvent<HTMLButtonElement>) {
-      if (!magnetic || !localRef.current) return;
-      const rect = localRef.current.getBoundingClientRect();
-      const relX = e.clientX - rect.left - rect.width / 2;
-      const relY = e.clientY - rect.top - rect.height / 2;
-      x.set(relX * 0.25);
-      y.set(relY * 0.25);
+    function handleMouseMove(e: MouseEvent<HTMLButtonElement>) {
+      onMouseMove?.(e);
+
+      if (magnetic && localRef.current) {
+        const rect = localRef.current.getBoundingClientRect();
+        const relX = e.clientX - rect.left - rect.width / 2;
+        const relY = e.clientY - rect.top - rect.height / 2;
+        x.set(relX * 0.25);
+        y.set(relY * 0.25);
+      }
     }
 
-    function handleMouseLeave() {
+    function handleMouseLeave(e: MouseEvent<HTMLButtonElement>) {
+      onMouseLeave?.(e);
       x.set(0);
       y.set(0);
     }
@@ -51,7 +67,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         }}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        style={{ x: springX, y: springY }}
+        style={{ ...style, x: springX, y: springY }}
         className={cn(
           "inline-flex items-center justify-center gap-2 rounded-full px-8 py-4 text-sm font-medium tracking-wide whitespace-nowrap",
           variantStyles[variant],
